@@ -1,0 +1,450 @@
+:root{
+  --white: #ffffff;
+  --lightgrey: #f5f5f5;
+  --text: #151515;
+  --purple: #9D00FF;
+  --gap: 16px;
+  --tile-w: clamp(240px, 25vw, 510px);
+  --tile-h: clamp(180px, 27vh, 390px);
+  --radius: 0px;
+  --speed: 220ms;
+}
+
+
+html, body {
+   height: 100%; 
+   overflow-x: hidden;
+   overflow-y: visible;
+
+  }
+
+body{
+  margin:0;
+  font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial;
+  background: var(--lightgrey);
+  color: var(--text);
+
+}
+
+h1, h2, h3, .caption {
+  font-family: "cofo-peshka-variable", sans-serif;
+  font-variation-settings: "slnt" 24, "wght" 200, "wdth" 62.5;
+}
+
+/* === RANDOM STAGE === */
+.stage{
+  position: relative;
+  min-height: 100dvh;
+  width: 100%;
+  overflow: hidden;      
+  padding: 0;
+  z-index: 1;          
+}
+
+.tile{ 
+  position: absolute;
+  transform-origin: top left; /* so any transforms (float/breath) expand down/right, not into the edges */
+  cursor: pointer;
+  user-select: none;
+  transition: transform var(--speed) ease;
+ }
+
+.home-title{
+  position: absolute;
+  top: -35px;
+  right: 25px;
+  font-size: 70px;
+  font-family: "cofo-peshka-variable", sans-serif;
+  font-variation-settings: "slnt" 24, "wght" 600, "wdth" 120;
+  color: var(--text);
+  z-index: 999;
+  pointer-events: none;
+}
+
+/* Hide cursor over tiles completely (homepage) */
+.tile, .tile * {
+  cursor: none !important;
+}
+
+.home-title-light {
+  position: absolute;
+  top: 30px;
+  right: 23px;
+  font-size: 70px;
+  font-family: "cofo-peshka-variable", sans-serif;
+  font-variation-settings: "slnt" -24, "wght" 100, "wdth" 120;
+  color: var(--text);
+  z-index: 999;
+  pointer-events: none;
+}
+
+
+.home-border-top{
+  position: absolute;
+  top: 20px;
+  left: 20px;
+  right: 50vw;
+  bottom: 50px;
+  height: 4px;
+  border: 1px solid #151515;
+}
+
+
+.thumb-wrap{
+  width: var(--tile-w);
+  height: auto;
+  overflow: hidden;       /* משאיר את הטקסט בהובר בפנים; לא פוגע ב-contain */
+  border-radius: var(--radius);
+  display: grid;
+  place-items: center; /* למרכז את התמונה בתוך המסגרת */
+    box-sizing: border-box;
+  padding: 6px; /* מרווח קטן לספוג את blur(2px) מכל הצדדים */
+  position: relative;
+}
+
+.thumb{
+  /* שמירה מוחלטת על יחס בתוך המסגרת – בלי חיתוך */
+  width: 100%;
+  height: 100%;
+  object-fit: contain;     /* תמלא את המסגרת בלי לחתוך */
+  filter: grayscale(100%) blur(var(--blur, 2px));
+  transition: filter 0.4s ease var(--speed) ease, opacity var(--speed) ease;
+  user-select: none; -webkit-user-drag: none;
+  display: block;
+  object-position: center center;
+}
+
+.caption{
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: top right;
+  pointer-events: none;
+  color: var(--purple);        /* צבע שם העבודה = רקע */
+  font-family: "cofo-peshka-variable", sans-serif;
+  font-variation-settings: "slnt" 24, "wght" 200, "wdth" 62.5;
+  font-size: clamp(18px, 26px, 30px);
+  font-weight: 200;
+  opacity: 0;
+  transition: opacity var(--speed) ease;
+  text-align: right;
+    user-select: none;
+  -webkit-user-drag: none;
+  padding: 12px;
+  padding-right: 18px;
+  height: 20px;
+  margin-right: -5px;
+}
+
+/* תווית הכיתוב עם רקע שחור מחליק מימין לשמאל */
+.caption-label{
+  position: relative;
+  display: inline-block;
+  padding: 0.15em 0.45em;
+  color: var(--lightgrey);        /* צבע הטקסט */
+  line-height: 1.1;
+  pointer-events: none;
+  z-index: 0;                 /* הטקסט מעל הפס */
+}
+.caption-label::before{
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: #151515;        /* הפס השחור */
+  transform: scaleX(0);
+  transform-origin: right center;   /* מתחיל מהפינה הימנית העליונה */
+  transition: transform 300ms ease;
+  z-index: -1;                /* מאחורי הטקסט */
+  border-radius: 2px;
+}
+/* בהובר: הפס מתפרש על כל רוחב הכיתוב */
+.tile:hover .caption-label::before{
+  transform: scaleX(1);
+}
+
+/* מסגרת דקה בהובר – בלי לשנות מידות האריח */
+.tile:hover .thumb-wrap::after{
+  content:"";
+  position: absolute;
+  inset: 6px;                 /* תוחם בדיוק את אזור התמונה (לא כולל ה-blur שנחתך ב-overflow) */
+  border: 1px solid #151515;  /* המסגרת */
+  pointer-events: none;
+}
+.tile:hover .caption{ opacity: 1; }
+
+/* ====== MODAL ====== */
+.overlay{
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,.42);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;             /* margin ויזואלי מסביב לתיבה */
+  z-index: 99999;
+  pointer-events: none;
+}
+
+.overlay.open{ 
+  display: flex; 
+   pointer-events: auto; 
+}
+
+.modal{
+  background: var(--lightgrey);
+  border: 1px solid #000;
+  border-radius: var(--radius);
+  width: 94vw;
+  display:flex;
+  margin: auto;
+  overflow: auto;
+  padding: 20px;
+  position: relative;
+  box-shadow: 0 8px 40px rgba(0,0,0,.25);
+  flex-direction: column;
+  gap:20px;
+  font-family: "narkiss-hadash", sans-serif;
+  font-weight: 200;
+  font-style: normal;
+  max-height: 90vh;       /* הגבלת גובה מקסימלית */
+  overflow-y: auto;       /* גלילה אנכית פנימית */
+}
+
+.close-btn{
+  position: absolute;
+  top: 14px; left: 14px;
+  border: 1px solid #000;
+  border-radius: 999px;
+  width: 34px; height: 34px;
+  display: grid; place-items: center;
+  background: #000;                 /* שחור מלא */
+  color: var(--lightgrey);           /* ה-X לבן מה־var */
+  font-size: 18px; cursor: pointer;
+  line-height: 1;
+  transition: background var(--speed) ease, color var(--speed) ease, transform var(--speed) ease;
+  outline: none;
+    z-index: 2;            /* קטן אבל מעל תוכן המודל */
+  pointer-events: auto;  /* ליתר ביטחון */
+}
+
+.close-btn:hover,
+.close-btn:focus-visible{
+  background: var(--text);
+  color: var(--lightgrey);
+  border-color: var(--text);
+} 
+
+.modal h2{ margin:0 0 8px 0; font-family: "cofo-peshka-variable", sans-serif;
+  font-variation-settings: "slnt" 24, "wght" 500, "wdth" 62.5;
+  font-size: clamp(3em, 7em, 10em);
+  padding-right: 10px;
+}
+
+  .modal p.desc{
+    margin:0 0 16px 0; 
+    }
+
+  .modal p {
+    font-family: "narkiss-hadash", sans-serif;  /* Adobe Fonts: השם המדויק מהקיט */
+    font-weight: 200;
+    font-style: normal;
+    color: var(--text);
+    line-height: 1.2; 
+    font-size: 24px;
+    letter-spacing: 0.015em;
+    padding-right: 50px;
+    max-width: 32em;
+    margin: 0 0 12px 0;
+  }
+
+/* בולד בתוך המודל (למשל בתיאור) */
+.modal p strong,
+.modal .desc strong{
+  font-family: "narkiss-hadash-extended", sans-serif;
+  font-weight: 800;
+  font-style: normal;
+}
+
+  .gallery{
+    display: block; /* זרימה אנכית, פריט מתחת לפריט */
+  }
+
+  .gallery img,
+  .gallery video{
+    display: block;
+    max-height: 85vh;  /* לא יגדילו מעבר לזה */
+    height: auto;            /* שומר יחס */
+    object-fit: contain;     /* ללא חיתוך */
+    box-sizing: border-box;  /* כדי שה-padding לא יגרום לגלילה רוחבית */
+    margin: 15px auto;       /* למרכז את המדיה */
+    padding: 5px auto;       /* 5px למעלה/למטה, 10px ימין/שמאל */
+    border: none;            /* בלי מסגרת */
+    border-radius: 0;        /* בלי פינות מעוגלות */
+    background: transparent; 
+  }
+
+@media (max-width: 520px){
+  :root{ --gap: 12px; }
+  .close-btn{ width: 32px; height: 32px; }
+}
+
+/* שכבת המסגרת מעל כל התמונות, לא מפריעה לקליקים */
+.home-frame {
+  position: fixed;        /* צמודה למסך */
+  inset: 0;               /* top/right/bottom/left: 0 */
+  pointer-events: none;   /* שלא תחסום hover/קליקים על התמונות */
+  z-index: 5500; /* מעל התמונות (Z_CAP≈4999) ומעל הצלב (5000), אך מתחת לכפתור האודות (6000) והמודל */
+}
+
+.home-frame-up {
+  position: absolute;
+  top: 20px;
+  right: 520px;
+  left: 20px;
+  bottom: 90px;
+  margin-bottom: 50px;
+  border-top: 1px solid var(--text);
+  border-left: 1px solid var(--text);
+}
+
+.home-frame-down {
+  position: absolute;
+  top: 150px;
+  bottom: 17px;
+  right: 20px;
+  left: 310px;
+  height: auto;
+  border-bottom: 1px solid var(--text);
+  border-right: 1px solid var(--text);
+}
+
+.home-about {
+  background-color: var(--text);
+  padding: 20px 40px;
+  border-radius: 10px;
+  border: 1px solid var(--text);
+  position: absolute;
+  bottom: 18px;
+  left: 20px;
+  font-size: 48px;
+  font-family: "cofo-peshka-variable", sans-serif;
+  font-variation-settings: "slnt" 0, "wght" 400, "wdth" 100;
+  color: var(--lightgrey);
+  display: inline-block;
+  pointer-events: auto;
+  z-index: 6000;
+  transition: all 0.3s ease;
+
+}
+
+   .home-about:hover {
+      font-variation-settings: "slnt" 24, "wght" 600, "wdth" 100;
+          background-color: var(--purple);
+        border: 1px solid var(--purple);
+        color: var(--lightgrey);
+   }
+
+   .crosshair{ position: fixed; inset: 0; pointer-events: none; z-index: 5000; }
+.crosshair-h{ position: absolute; left: 0; right: 0; top: 50%; height: 1px; background: #151515; transform: translateY(-0.5px); }
+.crosshair-v{ position: absolute; top: 0; bottom: 0; left: 50%; width: 1px; background: #151515; transform: translateX(-0.5px); }
+
+/* ===== Floating animation (position + opacity) ===== */
+/* ריחוף – מיקום בלבד */
+@keyframes floatXY {
+  0%   { transform: translate(0, 0); }
+  50%  { transform: translate(var(--fx, 3px), var(--fy, -3px)); }
+  100% { transform: translate(0, 0); }
+}
+.tile.float{
+  will-change: transform;
+  animation: floatXY var(--dur, 10s) ease-in-out infinite alternate;
+}
+
+
+
+/* ===== כפתור ריענון בפינה הימנית-תחתונה ===== */
+.reload-btn{
+  position: fixed;
+  right: 20px;
+  bottom: 17px;
+  width: 50px;
+  height: 50px;
+  border: 1px solid var(--text);   /* מסגרת שחורה 1px */
+  border-radius: 0;
+  background: none;
+  display: grid;
+  place-items: center;
+  padding: 0;
+  z-index: 6500;            /* מעל המסגרת ומתחת למודל */
+  pointer-events: auto;
+  outline: none;            /* לא נדרש outline כאן */
+}
+.reload-btn:hover{
+  background: var(--purple); 
+  border-color: var(--purple);
+}
+.reload-btn:focus-visible{
+  box-shadow: 0 0 0 2px var(--lightgrey), 0 0 0 4px #151515;
+}
+/* האייקון כ-mask כדי לשלוט בצבע מה-CSS */
+/* האייקון כ-mask כדי לשלוט בצבע מה-CSS */
+.reload-icon{
+  width: 60%;
+  height: 60%;
+  display: block;
+}
+/* סיבוב האייקון בעת לחיצה */
+@keyframes spin360{
+  from{ transform: rotate(0deg); }
+  to  { transform: rotate(360deg); }
+}
+.reload-btn.spin .reload-icon{
+  animation: spin360 0.8s linear;
+}
+
+/* בהובר: עוצרים את הריחוף לחלוטין */
+.tile.float:hover {
+  animation-play-state: paused; /* עוצר בדיוק איפה שהאנימציה נמצאת */
+}
+
+/* בהובר: מורידים שחור-לבן וטשטוש (כבר היה אצלך) */
+.tile:hover .thumb {
+  filter: none;
+}
+
+/* הקטנת W5 ללא טרנספורם (לא שוברים הובר/היטבוקס) */
+.tile[data-id="w5"] .thumb-wrap{
+  width: 185px;        /* בסיס קטן יותר */
+  max-width: 185px;
+  /* אופציונלי: אם צריך גם להגביל גובה */
+  /* max-height: 220px; */
+}
+
+/* ודא שהתמונה לא נמתחת מעבר לעטיפה */
+.tile[data-id="w5"] .thumb{
+  width: auto;
+  height: auto;
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+}
+
+/* כשה-overlay פתוח, תכריח סמן גלוי מעליו */
+.overlay, .overlay * {
+  cursor: default !important;
+}
+
+/* הוספתי בסוף styles.css */
+.tile.keep-gray:hover .thumb{
+  filter: grayscale(100%) !important; /* אין blur בהובר, רק GRayscale */
+}
+
+/* Force extended bold for <strong> inside modal */
+.modal #workDesc strong,
+.modal .desc strong,
+.modal p strong{
+  font-family: narkiss-hadash-extended, sans-serif;
+  font-weight: 700;
+  font-style: normal;
+}
+

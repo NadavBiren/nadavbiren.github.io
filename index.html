@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Nadav Birenboim - Portfolio</title>
+    <link rel="stylesheet" href="https://use.typekit.net/dec0ixr.css">
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        @import url("https://use.typekit.net/dec0ixr.css");
+    </style>
+
+</head>
+<body>
+
+  <!-- מכולה שמחזיקה את כל האריחים במיקום מוחלט -->
+  <main id="stage" class="stage" aria-label="עבודות"></main>
+    <div class="home-frame">
+    <h1 class="home-title">נדב בירנבוים</h1>
+    <h1 class="home-title-light">פרטפוליו</h1>
+    <div class="home-frame-up"></div>
+    <div class="home-frame-down"></div>
+<div class="home-about" id="aboutBtn">קצת עליי</div> 
+    
+  <!-- ====== MODAL ====== -->
+  <div class="overlay" id="overlay" role="dialog" aria-modal="true" aria-hidden="true">
+    <article class="modal" role="document" aria-labelledby="workTitle">
+      <button class="close-btn" id="closeBtn" aria-label="סגור">×</button>
+      <h2 id="workTitle">כותרת עבודה</h2>
+      <p class="desc" id="workDesc">פסקת תיאור קצרה על העבודה.</p>
+      <section class="gallery" id="workGallery"></section>
+    </article>
+  </div>
+
+  <div class="overlay" id="aboutOverlay" role="dialog" aria-modal="true" aria-hidden="true">
+  <article class="modal about-modal" role="document" aria-labelledby="aboutTitle">
+    <button class="close-btn" id="aboutCloseBtn" aria-label="סגור">×</button>
+    <h2 id="aboutTitle">קצת עליי</h2>
+    <p class="desc">כאן תכתוב טקסט אישי, ביוגרפיה קצרה, וכו'.</p>
+  </article>
+</div>
+
+  <!-- קווי צלב – מאחורי התמונות ולפני המודל -->
+  <div class="crosshair" aria-hidden="true">
+    <div class="crosshair-h"></div>
+    <div class="crosshair-v"></div>
+  </div>
+
+  <!-- כפתור ריענון קבוע בפינה -->
+  <button class="reload-btn" id="reloadBtn" aria-label="רענון העמוד" title="רענון">
+<img src="./assets/vectors/reload-icon.svg" class="reload-icon" alt="">
+  </button>
+
+  <script src="script.js"></script>
+</body>
+</html>
